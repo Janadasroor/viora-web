@@ -1,0 +1,16 @@
+@font-face {
+  font-family: 'Pacifico';
+  src: url('/fonts/pacifico_regular.ttf');
+  font-weight: 400;
+}
+
+@font-face {
+  font-family: 'Bungee Spice';
+  src: url('/fonts/bungee_spice.ttf');
+  font-weight: 400;
+}
+
+.title {
+  font-family: "Pacifico";
+  
+}
