@@ -1,7 +1,7 @@
 // Firebase configuration for client-side
 import { initializeApp, getApps, FirebaseApp } from 'firebase/app';
 import { getMessaging, getToken, onMessage, isSupported, Messaging } from 'firebase/messaging';
-import { getStorage } from 'firebase/storage';
+import { getStorage, FirebaseStorage } from 'firebase/storage';
 
 // Your web app's Firebase configuration
 const firebaseConfig = {
@@ -13,13 +13,27 @@ const firebaseConfig = {
     appId: process.env.NEXT_PUBLIC_FIREBASE_APP_ID,
 };
 
+const isFirebaseConfigured = Boolean(
+    firebaseConfig.apiKey &&
+    firebaseConfig.projectId &&
+    process.env.NEXT_PUBLIC_USE_FIREBASE === 'true'
+);
+
 // Initialize Firebase
-let app: FirebaseApp;
-try {
-    app = getApps().length === 0 ? initializeApp(firebaseConfig) : getApps()[0];
-} catch (error) {
-    console.error(' Firebase app initialization failed:', error);
-    throw error;
+let app: FirebaseApp | null = null;
+let storage: FirebaseStorage | null = null;
+
+if (isFirebaseConfigured) {
+    try {
+        app = getApps().length === 0 ? initializeApp(firebaseConfig) : getApps()[0];
+        storage = getStorage(app);
+    } catch (error) {
+        console.error('⚠️ Firebase app initialization failed:', error);
+    }
+} else {
+    if (process.env.NEXT_PUBLIC_USE_FIREBASE === 'true') {
+        console.warn('⚠️ Firebase is enabled but configuration is missing (projectId/apiKey)');
+    }
 }
 
 // Initialize Firebase Cloud Messaging
@@ -28,7 +42,7 @@ let messagingPromise: Promise<Messaging | null> | null = null;
 
 // Function to get messaging instance
 async function getMessagingInstance(): Promise<Messaging | null> {
-    if (typeof window === 'undefined') {
+    if (typeof window === 'undefined' || !app) {
         return null;
     }
 
@@ -44,15 +58,15 @@ async function getMessagingInstance(): Promise<Messaging | null> {
         try {
             const supported = await isSupported();
 
-            if (supported) {
+            if (supported && app) {
                 messaging = getMessaging(app);
                 return messaging;
             } else {
-                console.warn('⚠️ Firebase messaging not supported in this browser');
+                console.warn('⚠️ Firebase messaging not supported or Firebase not initialized');
                 return null;
             }
         } catch (error) {
-            console.error(' Error initializing messaging:', error);
+            console.error('⚠️ Error initializing messaging:', error);
             return null;
         }
     })();
@@ -60,9 +74,9 @@ async function getMessagingInstance(): Promise<Messaging | null> {
     return messagingPromise;
 }
 
-// Initialize messaging on load
-if (typeof window !== 'undefined') {
+// Initialize messaging on load if configured
+if (typeof window !== 'undefined' && isFirebaseConfigured) {
     getMessagingInstance();
 }
-const storage = getStorage(app);
+
 export { app, messaging, getMessagingInstance, getToken, onMessage, storage };

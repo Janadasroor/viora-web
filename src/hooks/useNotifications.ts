@@ -37,8 +37,10 @@ export function useNotifications(): UseNotificationsReturn {
         const messagingInstance = await getMessagingInstance();
 
         if (!messagingInstance) {
-            console.error(' Firebase messaging not available');
-            setError('Firebase messaging not initialized');
+            if (process.env.NEXT_PUBLIC_USE_FIREBASE === 'true') {
+                console.error('⚠️ Firebase messaging not available even though it is enabled');
+                setError('Firebase messaging not initialized');
+            }
             return false;
         }
 

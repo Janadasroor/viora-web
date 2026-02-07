@@ -5,13 +5,13 @@ importScripts('https://www.gstatic.com/firebasejs/10.7.1/firebase-messaging-comp
 // Initialize the Firebase app in the service worker
 // Note: Service workers cannot access process.env, so values must be hardcoded
 firebase.initializeApp({
-    apiKey: "AIzaSyBlhTi5_f01TZe2o946Ys_mInxd9kuNqBk",
-    authDomain: "viora-887d7.firebaseapp.com",
-    projectId: "viora-887d7",
-    storageBucket: "viora-887d7.firebasestorage.app",
-    messagingSenderId: "248070785873",
-    appId: "1:248070785873:web:a2540afe4b2808f3ffa170",
-    measurementId: "G-R6NQ2NX5SK"
+    apiKey: "YOUR_FIREBASE_API_KEY",
+    authDomain: "YOUR_FIREBASE_AUTH_DOMAIN",
+    projectId: "YOUR_FIREBASE_PROJECT_ID",
+    storageBucket: "YOUR_FIREBASE_STORAGE_BUCKET",
+    messagingSenderId: "YOUR_FIREBASE_MESSAGING_SENDER_ID",
+    appId: "YOUR_FIREBASE_APP_ID",
+    measurementId: "YOUR_FIREBASE_MEASUREMENT_ID"
 });
 
 const messaging = firebase.messaging();
